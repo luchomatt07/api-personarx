@@ -1,0 +1,23 @@
+{
+  "id": "12121111111111111111111",
+  "listaDetalle":[
+    {
+      "listaProducto":{
+        "nombre":"Arroz Palmera",
+        "estado":"1",
+        "tipo":"1"
+      },
+      "precioVenta":600,
+      "estado":"1",
+      "cantidad":20
+    }
+  ],
+  "fechaVenta":"2023-12-04",
+  "cliente":{
+    "nombres":"Askaa",
+    "fechanacimiento":"2000-12-03",
+    "estado":"1",
+    "apellidos":"Ugarte Torres",
+    "dni":"43536776"
+  }
+}
