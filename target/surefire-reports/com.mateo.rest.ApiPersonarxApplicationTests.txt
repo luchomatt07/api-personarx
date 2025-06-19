@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.mateo.rest.ApiPersonarxApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.398 s - in com.mateo.rest.ApiPersonarxApplicationTests
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.058 s -- in com.mateo.rest.ApiPersonarxApplicationTests
