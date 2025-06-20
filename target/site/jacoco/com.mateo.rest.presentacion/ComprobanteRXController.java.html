@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComprobanteRXController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">api-personarx</a> &gt; <a href="index.source.html" class="el_package">com.mateo.rest.presentacion</a> &gt; <span class="el_source">ComprobanteRXController.java</span></div><h1>ComprobanteRXController.java</h1><pre class="source lang-java linenums">package com.mateo.rest.presentacion;
+
+import com.mateo.rest.dto.ComprobantePagoDTO;
+import com.mateo.rest.dto.response.BodyResponse;
+import com.mateo.rest.dto.response.ComprobanteResponse;
+import com.mateo.rest.entity.ComprobantePago;
+import com.mateo.rest.service.ComprobanteRXService;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(value =  &quot;/api/comprobante&quot;)
+public class ComprobanteRXController {
+
+    private ComprobanteRXService comprobanteRXService;
+
+<span class="fc" id="L26">    public ComprobanteRXController(ComprobanteRXService comprobanteRXService) {</span>
+<span class="fc" id="L27">        this.comprobanteRXService = comprobanteRXService;</span>
+<span class="fc" id="L28">    }</span>
+
+    @PostMapping(
+            value = &quot;/addcomprobanterx&quot;,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single&lt;ComprobantePago&gt; addComprobante(@RequestBody ComprobantePagoDTO comprobantePago) {
+<span class="nc" id="L36">        return comprobanteRXService.addVenta(comprobantePago);</span>
+    }
+
+    @GetMapping(
+            value = &quot;/fingallcomprobanterx&quot;,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = &quot;Obtener todo los  comprobantes&quot;, description = &quot;Mostrar Datos de Comprobante&quot;, tags = { &quot;ComprobanteRXController&quot; })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Ok&quot;, content =
+                    { @Content(mediaType = &quot;application/json&quot;, schema =
+                    @Schema(implementation = ComprobantePago.class)) }),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid ID supplied&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Customer not found&quot;),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;, content =
+                    { @Content(mediaType = &quot;application/json&quot;, schema =
+                    @Schema(implementation = BodyResponse.class)) }) })
+    public Flowable&lt;ComprobantePago&gt; getAllComprobante(
+            @RequestHeader(&quot;idTransaccion&quot;) String idTransaccion){
+<span class="nc" id="L55">        return comprobanteRXService.getAll();</span>
+    }
+
+    @GetMapping(
+            value = &quot;/findcomprobante&quot;,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Single&lt;ResponseEntity&lt;ComprobanteResponse&gt;&gt; getAllComprobante(
+            @RequestHeader(&quot;idTransaccion&quot;) String idTransaccion,
+            @RequestParam(value = &quot;precio&quot;,defaultValue = &quot;200&quot;, required = false) double precio,
+            @RequestParam(value = &quot;dni&quot;, required = false) String dni,
+            @RequestParam(value = &quot;estado&quot;, required=false) String estado,
+            @RequestParam(value = &quot;cantidad&quot;, required = false) Integer cantidad){
+<span class="nc" id="L68">        return comprobanteRXService.getAllFilter(idTransaccion,dni,estado,precio,cantidad)</span>
+<span class="nc" id="L69">                .subscribeOn(Schedulers.io())</span>
+<span class="nc" id="L70">                .map(sus-&gt;ResponseEntity.ok(sus));</span>
+    }
+
+    @GetMapping(
+            value = &quot;/findallcomprobanterxmmap&quot;,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public Flowable&lt;ComprobantePago&gt; getAllComprobanteMap(
+            @RequestHeader(&quot;idTransaccion&quot;) String idTransaccion,
+            @RequestParam(value = &quot;precio&quot;,defaultValue = &quot;200&quot;, required = false) double precio,
+            @RequestParam(value = &quot;dni&quot;, required = false) String dni,
+            @RequestParam(value = &quot;estado&quot;, required=false) String estado,
+            @RequestParam(value = &quot;cantidad&quot;, required = false) Integer cantidad){
+<span class="nc" id="L83">         return comprobanteRXService.getAllFilterMap(idTransaccion,dni,estado,precio,cantidad);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

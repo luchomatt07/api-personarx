@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComprobanteRXServiceImp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">api-personarx</a> &gt; <a href="index.source.html" class="el_package">com.mateo.rest.service</a> &gt; <span class="el_source">ComprobanteRXServiceImp.java</span></div><h1>ComprobanteRXServiceImp.java</h1><pre class="source lang-java linenums">package com.mateo.rest.service;
+
+import com.mateo.rest.dto.ClienteDTO;
+import com.mateo.rest.dto.ComprobantePagoDTO;
+import com.mateo.rest.dto.DetalleVentaDTO;
+import com.mateo.rest.dto.ProductoDTO;
+import com.mateo.rest.dto.response.BodyResponse;
+import com.mateo.rest.dto.response.ComprobanteResponse;
+import com.mateo.rest.entity.Cliente;
+import com.mateo.rest.entity.ComprobantePago;
+import com.mateo.rest.entity.DetalleVenta;
+import com.mateo.rest.entity.Producto;
+import com.mateo.rest.repository.ComprobantePagoRX2Repository;
+import com.mateo.rest.util.Constantes;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+@Service
+public class ComprobanteRXServiceImp implements ComprobanteRXService{
+
+    private ComprobantePagoRX2Repository comprobantePagRX2Repository;
+
+<span class="fc" id="L30">    public ComprobanteRXServiceImp(ComprobantePagoRX2Repository comprobantePagRX2Repository) {</span>
+<span class="fc" id="L31">        this.comprobantePagRX2Repository = comprobantePagRX2Repository;</span>
+<span class="fc" id="L32">    }</span>
+
+    @Override
+    public Single&lt;ComprobantePago&gt; addVenta(ComprobantePagoDTO comprobante) {
+<span class="nc" id="L36">        return comprobantePagRX2Repository.save(comprobanteReqToEntity(comprobante));</span>
+    }
+
+    @Override
+    public Flowable&lt;ComprobantePago&gt; getAll() {
+<span class="nc" id="L41">        return comprobantePagRX2Repository.findAll();</span>
+    }
+
+    private ComprobantePago comprobanteReqToEntity(ComprobantePagoDTO comprobantePagoReq) {
+<span class="nc" id="L45">        ComprobantePago comprobantePago = new ComprobantePago();</span>
+<span class="nc" id="L46">        BeanUtils.copyProperties(comprobantePagoReq, comprobantePago);</span>
+<span class="nc" id="L47">        comprobantePago.setId(UUID.randomUUID().toString());</span>
+
+<span class="nc" id="L49">        Cliente clien=new Cliente();</span>
+<span class="nc" id="L50">        BeanUtils.copyProperties(comprobantePagoReq.getCliente(), clien);</span>
+<span class="nc" id="L51">        comprobantePago.setCliente(clien);</span>
+
+<span class="nc" id="L53">        List&lt;DetalleVenta&gt; lis=comprobantePagoReq.getListaDetalle()</span>
+<span class="nc" id="L54">                .stream()</span>
+<span class="nc" id="L55">                .map(detalle -&gt;{</span>
+<span class="nc" id="L56">                    Producto productTarget=new Producto();</span>
+<span class="nc" id="L57">                    BeanUtils.copyProperties(detalle.getListaProducto(), productTarget);</span>
+
+<span class="nc" id="L59">                    DetalleVenta detalleTarg=new DetalleVenta();</span>
+<span class="nc" id="L60">                    detalleTarg.setCantidad(detalle.getCantidad());</span>
+<span class="nc" id="L61">                    detalleTarg.setEstado(detalle.getEstado());</span>
+<span class="nc" id="L62">                    detalleTarg.setPrecioVenta(detalle.getPrecioVenta());</span>
+<span class="nc" id="L63">                    detalleTarg.setListaProducto(productTarget);</span>
+<span class="nc" id="L64">                    return detalleTarg;</span>
+
+<span class="nc" id="L66">                }).toList();</span>
+<span class="nc" id="L67">        comprobantePago.setListaDetalle(lis);</span>
+<span class="nc" id="L68">        return comprobantePago;</span>
+    }
+
+    @Override
+    public Flowable&lt;ComprobantePago&gt; getAllFilterMap(String idTransaccion,String dni,String estado,double precio, Integer cantidad) {
+        //return  comprobantePagRX2Repository.findComprobantexPrecio(precio);
+<span class="nc" id="L74">        System.out.println(&quot;Listaa...&quot;+getAllFilterM(idTransaccion,dni,estado,precio,cantidad).toList().blockingGet());</span>
+<span class="nc" id="L75">        return  comprobantePagRX2Repository.findAll()</span>
+<span class="nc bnc" id="L76" title="All 4 branches missed.">                .filter(filt-&gt; null!=filt.getCliente() &amp;&amp; null!=filt.getListaDetalle())</span>
+<span class="nc" id="L77">                .filter(client-&gt;dni.equals(client.getCliente().getDni()))</span>
+<span class="nc" id="L78">                .onErrorReturn(error-&gt;{</span>
+<span class="nc" id="L79">                    System.out.println(&quot;Error:... &quot;+ error.getMessage());</span>
+<span class="nc" id="L80">                    return new ComprobantePago();</span>
+                });
+
+    }
+
+    public Flowable&lt;List&lt;DetalleVenta&gt;&gt; getAllFilterM(String idTransaccion,String dni,String estado,double precio, Integer cantidad) {
+        //return  comprobantePagRX2Repository.findComprobantexPrecio(precio);
+<span class="nc" id="L87">        return  comprobantePagRX2Repository.findAll()</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">                .filter(filt-&gt; null!=filt.getCliente() &amp;&amp; null!=filt.getListaDetalle())</span>
+<span class="nc" id="L89">                .filter(client-&gt;dni.equals(client.getCliente().getDni()))</span>
+<span class="nc" id="L90">                .flatMap(resource-&gt; {</span>
+<span class="nc" id="L91">                    System.out.println(&quot;Iniciando Proceso Asyncrono &quot;);</span>
+<span class="nc" id="L92">                   return Flowable.just(resource.getListaDetalle());</span>
+                })
+<span class="nc" id="L94">                .doOnNext(x-&gt;{</span>
+<span class="nc" id="L95">                    System.out.println(&quot;Probando: &quot;+x.stream().toString());</span>
+<span class="nc" id="L96">                });</span>
+    }
+
+    public Flowable&lt;List&lt;DetalleVenta&gt;&gt; getAlf(String idTransaccion,String dni,String estado,double precio, Integer cantidad) {
+        //return  comprobantePagRX2Repository.findComprobantexPrecio(precio);
+<span class="nc" id="L101">        return  comprobantePagRX2Repository.findAll()</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">                .filter(filt-&gt; null!=filt.getCliente() &amp;&amp; null!=filt.getListaDetalle())</span>
+<span class="nc" id="L103">                .filter(client-&gt;dni.equals(client.getCliente().getDni()))</span>
+<span class="nc" id="L104">                .flatMap(resource-&gt; {</span>
+<span class="nc" id="L105">                    System.out.println(&quot;Iniciando Proceso Asyncrono &quot;);</span>
+<span class="nc" id="L106">                    return Flowable.just(resource.getListaDetalle());</span>
+                });
+    }
+
+
+    @Override
+    public Single&lt;ComprobanteResponse&gt; getAllFilter(String idTransaccion,String dni,String estado,double precio, Integer cantidad) {
+<span class="nc" id="L113">        Flowable&lt;ComprobantePago&gt; listaComprobantePago= comprobantePagRX2Repository.findComprobantexPrecio(precio);</span>
+
+<span class="nc" id="L115">        BodyResponse bodyResponse=new BodyResponse();</span>
+<span class="nc" id="L116">        bodyResponse.setIdtransaccion(idTransaccion);</span>
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if(null ==listaComprobantePago ){</span>
+<span class="nc" id="L119">            bodyResponse.setMensajeRespuesta(Constantes.NOSE_ENCONTRARON_REGISTROS);</span>
+<span class="nc" id="L120">            bodyResponse.setCodigoRespuesta(&quot;1&quot;);</span>
+
+<span class="nc" id="L122">            return Single.create(singleSuscriber -&gt;{</span>
+<span class="nc" id="L123">                ComprobanteResponse res=new ComprobanteResponse();</span>
+<span class="nc" id="L124">                res.setAuditResponse(bodyResponse);</span>
+<span class="nc" id="L125">                singleSuscriber.onSuccess(res);</span>
+<span class="nc" id="L126">            });</span>
+        }
+
+<span class="nc" id="L129">        bodyResponse.setMensajeRespuesta(&quot;OK&quot;);</span>
+<span class="nc" id="L130">        bodyResponse.setCodigoRespuesta(&quot;0&quot;);</span>
+
+<span class="nc" id="L132">        return Single.create(singleSuscriber -&gt; {</span>
+<span class="nc" id="L133">            ComprobanteResponse res = new ComprobanteResponse();</span>
+<span class="nc" id="L134">            res.setAuditResponse(bodyResponse);</span>
+<span class="nc" id="L135">            res.setListaComProbante(comprobanteReqToEntityFilter(listaComprobantePago.toList().blockingGet()));</span>
+<span class="nc" id="L136">            singleSuscriber.onSuccess(res);</span>
+<span class="nc" id="L137">        });</span>
+    }
+
+    private  List&lt;ComprobantePagoDTO&gt; comprobanteReqToEntityFilter( List&lt;ComprobantePago&gt; listaComprobantePago) {
+<span class="nc" id="L141">        return listaComprobantePago</span>
+<span class="nc" id="L142">                .stream()</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">                .filter(filt-&gt; null!=filt.getCliente() &amp;&amp; null!=filt.getListaDetalle())</span>
+<span class="nc" id="L144">                .map(listdetalle -&gt;{</span>
+<span class="nc" id="L145">                    ComprobantePagoDTO comprobantePagoDTO=new ComprobantePagoDTO();</span>
+<span class="nc" id="L146">                    comprobantePagoDTO.setId(listdetalle.getId());</span>
+<span class="nc" id="L147">                    comprobantePagoDTO.setFechaVenta(listdetalle.getFechaVenta());</span>
+
+<span class="nc" id="L149">                    ClienteDTO clienteDTO=new ClienteDTO();</span>
+<span class="nc" id="L150">                    BeanUtils.copyProperties(listdetalle.getCliente(), clienteDTO);</span>
+<span class="nc" id="L151">                    comprobantePagoDTO.setCliente(clienteDTO);</span>
+<span class="nc" id="L152">                    comprobantePagoDTO.setListaDetalle(procesarDetalleList(listdetalle.getListaDetalle()));</span>
+
+<span class="nc" id="L154">                    return comprobantePagoDTO;</span>
+                })
+<span class="nc" id="L156">                .toList();</span>
+    }
+
+
+    public  List&lt;DetalleVentaDTO&gt; procesarDetalleList(List&lt;DetalleVenta&gt; listaDetalle){
+<span class="nc" id="L161">        return listaDetalle</span>
+<span class="nc" id="L162">                .stream()</span>
+<span class="nc" id="L163">                .map(detalle -&gt;{</span>
+<span class="nc" id="L164">                    DetalleVentaDTO deta=new DetalleVentaDTO();</span>
+<span class="nc" id="L165">                    deta.setPrecioVenta(detalle.getPrecioVenta());</span>
+<span class="nc" id="L166">                    deta.setCantidad(detalle.getCantidad());</span>
+<span class="nc" id="L167">                    deta.setEstado(detalle.getEstado());</span>
+
+<span class="nc" id="L169">                    ProductoDTO prod=new ProductoDTO();</span>
+<span class="nc" id="L170">                    BeanUtils.copyProperties(detalle.getListaProducto(), prod);</span>
+<span class="nc" id="L171">                    deta.setListaProducto(prod);</span>
+<span class="nc" id="L172">                    return deta;</span>
+
+                })
+<span class="nc" id="L175">                .toList();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
