@@ -25,7 +25,7 @@ pipeline {
 					  -Dsonar.sources=src/main/java/ \
 					  -Dsonar.tests=src/test/java \
 					  -Dsonar.java.binaries=target/classes \
-					  -Dsonar.tests=src/test/java/
+					  -Dsonar.tests=src/test/java/ \
 					  -Dsonar.junit.reportsPath=target/surefire-reports \
 					  -Dsonar.surefire.reportsPath=target/surefire-reports \
 					  -Dsonar.jacoco.reportsPath=target/jacoco.exec \
