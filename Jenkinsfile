@@ -6,7 +6,7 @@ pipeline {
 	}
 	
 	environment {
-		SCANNER_HOME = tool 'sonarqube' // Name from Jenkins Global Tool Configuration
+		SCANNER_HOME = tool 'sonarscanner' // Name from Jenkins Global Tool Configuration
 		SONARQUBE_ENV = 'My SonarQube Server'  // Name from Jenkins Configure System
     }
     stages {
