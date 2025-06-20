@@ -22,15 +22,15 @@ pipeline {
 				  sh """
 					${SCANNER_HOME}/bin/sonar-scanner \
 					  -Dsonar.projectKey=api-personarx \
-					  -Dsonar.sources=api-personarx/src/main/java/ \
-					  -Dsonar.tests=api-personarx/src/test/java \
-					  -Dsonar.java.binaries=api-personarx/target/classes \
-					  -Dsonar.tests=api-personarx/src/test/java/
-					  -Dsonar.junit.reportsPath=api-personarx/target/surefire-reports \
-					  -Dsonar.surefire.reportsPath=api-personarx/target/surefire-reports \
-					  -Dsonar.jacoco.reportsPath=api-personarx/target/jacoco.exec \
+					  -Dsonar.sources=src/main/java/ \
+					  -Dsonar.tests=src/test/java \
+					  -Dsonar.java.binaries=target/classes \
+					  -Dsonar.tests=src/test/java/
+					  -Dsonar.junit.reportsPath=target/surefire-reports \
+					  -Dsonar.surefire.reportsPath=target/surefire-reports \
+					  -Dsonar.jacoco.reportsPath=target/jacoco.exec \
 					  -Dsonar.java.coveragePlugin=jacoco \
-					  -Dsonar.coverage.jacoco.xmlReportPaths=api-personarx/target/site/jacoco/jacoco.xml
+					  -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 				  """
 				}
 		   }
