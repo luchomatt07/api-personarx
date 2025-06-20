@@ -5,25 +5,25 @@ pipeline {
 	  maven 'Maven Apache'
 	}
     stages {
-	    stage('Checkout') {
+        stage('Checkout') {
             steps {
-               git url: 'https://github.com/luchomatt07/api-personarx.git', branch: 'main'
+                // Clonar el repositorio desde GitHub
+                git url: 'https://github.com/luchomatt07/api-personarx.git', branch: 'main'
             }
         }
         stage('Build') {
             steps {
-                echo 'Building..'
+                // Compilar el proyecto usando Maven
+                sh 'mvn clean install'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
+    }
+    post {
+        success {
+            echo 'Build completed successfully!'
         }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
+        failure {
+            echo 'Build failed.'
         }
     }
 }
